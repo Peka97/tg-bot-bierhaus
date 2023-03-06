@@ -1,12 +1,50 @@
-from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from table import get_shop_adresses
 from shops import get_shop_name, get_shop_id
 
 
+def get_start_keyboard():
+	btn = KeyboardButton('Начать смену')
+	keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+	keyboard.add(btn)
+	return keyboard
+
+
+def get_user_keyboard():
+	btn = KeyboardButton('Расход')
+	keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
+	keyboard.add(btn)
+	return keyboard
+
+
+def get_cancel_keyboard():
+	btn = InlineKeyboardButton('Отменить', callback_data='cancel')
+	keyboard = InlineKeyboardMarkup()
+	keyboard.add(btn)
+	return keyboard
+
+
+def get_staff_keyboard():
+	btn_1 = KeyboardButton('Приход')
+	btn_2 = KeyboardButton('Инкассация')
+	btn_3 = KeyboardButton('Расход')
+	keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1).add(btn_1, btn_2, btn_3)
+	return keyboard
+
+
+def get_admin_keyboard():
+	btn_1 = InlineKeyboardButton('Добавить супервайзера', callback_data='add_staff')
+	btn_2 = InlineKeyboardButton('Проверить алгоритм пользователя', callback_data='check_user')
+	btn_3 = InlineKeyboardButton('Проверить алгоритм супервайзера', callback_data='check_staff')
+	keyboard = InlineKeyboardMarkup(row_width=1).add(btn_1, btn_2, btn_3)
+	return keyboard
+
+
 def get_time_keyboard():
-	times_keyboard = InlineKeyboardMarkup()
+	times_keyboard = InlineKeyboardMarkup(row_width=1)
 	times_keyboard.add(
+		InlineKeyboardButton('Дневная (не круглосуточный)', callback_data='only_day'),
 		InlineKeyboardButton('Дневная', callback_data='day'),
 		InlineKeyboardButton('Ночная', callback_data='night')
 	)
