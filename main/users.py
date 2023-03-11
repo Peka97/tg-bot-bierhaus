@@ -16,7 +16,6 @@ def set_user_temple(user_id):
 		'layout': "Н/Д",
 		'cleaning': "Н/Д",
 		'send_photo': "Н/Д",
-		'revision': "Н/Д",
 		'expiration_date': "Н/Д",
 		'work_done': "Н/Д",
 		'revenue': "Н/Д",
@@ -24,23 +23,61 @@ def set_user_temple(user_id):
 		'collection': "Н/Д",
 		'connected_kegs': "Н/Д",
 		'full_kegs': "Н/Д",
+		'purchases': {
+			'packages_large': 'Н/Д',
+			'packing_bags': 'Н/Д',
+			'glasses': 'Н/Д',
+			'containers_small': 'Н/Д',
+			'containers_large': 'Н/Д',
+			'cling_film': 'Н/Д',
+			'weight_tape': 'Н/Д',
+			'receipt_tape': 'Н/Д',
+			'soft_overhead': 'Н/Д',
+		}
 	}
 
 	with open('users.json', 'w', encoding='utf-8') as users:
 		json.dump(data, users)
 
 
+def set_users_temple():
+	try:
+		with open('users.json', 'r', encoding='utf-8') as users:
+			data = json.load(users)
+
+		users = data.keys()
+		for user in users:
+			data[user] = {}
+
+		with open('users.json', 'w', encoding='utf-8') as users:
+			json.dump(data, users)
+	except json.JSONDecodeError:
+		with open('users.json', 'w', encoding='utf-8') as users:
+			json.dump({'5503842748': {}}, users)
+
+
 def set_staff_temple():
 	with open('staff.json', 'w', encoding='utf-8') as staff:
-		json.dump({'admin': [840129933, 1387411715], 'staff': [840129933, 1387411715], }, staff)
+		json.dump({'admin': [840129933, 1387411715], 'staff': {840129933: None, 1387411715: None}}, staff)
 
 
-def add_staff(user_id: int):
+def add_staff(user_id: int, fullname: str = None):
 	with open('staff.json', 'r', encoding='utf-8') as staff:
 		data = json.load(staff)
 	with open('staff.json', 'w', encoding='utf-8') as staff:
-		data['staff'].append(user_id)
+		data['staff'][user_id] = fullname
 		json.dump(data, staff)
+
+
+def get_staff_fullname() -> str:
+	try:
+		with open('staff.json', 'r', encoding='utf-8') as staff:
+			data = json.load(staff)
+			for fullname in data['staff'].values():
+				if fullname is not None:
+					return fullname
+	except AttributeError:
+		return 'Admin'
 
 
 def change_user_info(user_id: int, fields: dict):
@@ -48,8 +85,11 @@ def change_user_info(user_id: int, fields: dict):
 		data = json.load(users)
 
 	user_info = data[str(user_id)]
-	for key, value in fields.items():
-		user_info[key] = value
+	if 'purchases' in fields.keys():
+		user_info['purchases'] = fields['purchases']
+	else:
+		for key, value in fields.items():
+			user_info[key] = value
 
 	with open('users.json', 'w', encoding='utf-8') as users:
 		json.dump(data, users)
@@ -58,3 +98,8 @@ def change_user_info(user_id: int, fields: dict):
 def get_user_info(user_id: int):
 	with open('users.json', 'r', encoding='utf-8') as users:
 		return json.load(users)[f'{user_id}']
+
+
+def get_users_id():
+	with open('users.json', 'r', encoding='utf-8') as users:
+		return tuple(json.load(users).keys())

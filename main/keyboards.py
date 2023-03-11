@@ -1,3 +1,5 @@
+import json
+
 from aiogram.types import InlineKeyboardButton, InlineKeyboardMarkup, KeyboardButton, ReplyKeyboardMarkup
 
 from table import get_shop_adresses
@@ -25,14 +27,6 @@ def get_cancel_keyboard():
 	return keyboard
 
 
-def get_staff_keyboard():
-	btn_1 = KeyboardButton('Приход')
-	btn_2 = KeyboardButton('Инкассация')
-	btn_3 = KeyboardButton('Расход')
-	keyboard = ReplyKeyboardMarkup(resize_keyboard=True, row_width=1).add(btn_1, btn_2, btn_3)
-	return keyboard
-
-
 def get_admin_keyboard():
 	btn_1 = InlineKeyboardButton('Добавить супервайзера', callback_data='add_staff')
 	btn_2 = InlineKeyboardButton('Проверить алгоритм пользователя', callback_data='check_user')
@@ -44,27 +38,20 @@ def get_admin_keyboard():
 def get_time_keyboard():
 	times_keyboard = InlineKeyboardMarkup(row_width=1)
 	times_keyboard.add(
-		InlineKeyboardButton('Дневная (не круглосуточный)', callback_data='only_day'),
-		InlineKeyboardButton('Дневная', callback_data='day'),
+		InlineKeyboardButton('Дневная 24/7', callback_data='day'),
+		InlineKeyboardButton('Дневная', callback_data='day_only'),
 		InlineKeyboardButton('Ночная', callback_data='night')
 	)
 	return times_keyboard
 
 
 def get_shops_keyboard(time):
-	if time == 'day':
-		addresses = get_shop_adresses('Дневная')
-	else:
-		addresses = get_shop_adresses('Ночная')
-	idx = 0
+	with open('shops.json', 'r', encoding='utf-8') as shops:
+		data = json.load(shops)
 	shops_keyboard = InlineKeyboardMarkup(row_width=3)
+	for shop_id, shop_addresses in data['shop_addresses'][time].items():
+		shops_keyboard.add((InlineKeyboardButton(shop_id[5:], callback_data=shop_id)))
 
-	for address in addresses:
-		shop_id = get_shop_id(address)
-		shop_number = shop_id.lstrip('shop_')
-		key = InlineKeyboardButton(shop_number, callback_data=f'{shop_id}')
-		shops_keyboard.add(key)
-		idx += 1
 	return shops_keyboard
 
 
@@ -104,6 +91,13 @@ def get_send_photo_keyboard():
 	return keyboard
 
 
+def get_send_cash_keyboard():
+	btn = InlineKeyboardButton('Средства получены', callback_data='send_cash_yes')
+	keyboard = InlineKeyboardMarkup()
+	keyboard.add(btn)
+	return keyboard
+
+
 def get_continue_keyboard():
 	yes_btn = InlineKeyboardButton('Продолжить', callback_data='continue')
 	keyboard = InlineKeyboardMarkup()
@@ -136,4 +130,11 @@ def get_done_keyboard():
 	yes_btn = InlineKeyboardButton('КОНЕЦ', callback_data='exit')
 	keyboard = InlineKeyboardMarkup()
 	keyboard.add(yes_btn)
+	return keyboard
+
+
+def get_purchases_keyboard():
+	btn = InlineKeyboardButton('Начать', callback_data='purchases_start')
+	keyboard = InlineKeyboardMarkup()
+	keyboard.add(btn)
 	return keyboard

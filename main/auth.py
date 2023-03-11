@@ -12,8 +12,8 @@ def is_user(user_id: int):
 
 def is_staff(user_id: int):
 	with open('staff.json', 'r', encoding='utf-8') as staff:
-		staffs = json.load(staff)['staff']
-		return True if user_id in staffs else False
+		staffs = json.load(staff)['staff'].keys()
+		return True if str(user_id) in staffs else False
 
 
 def is_admin(user_id: int):
