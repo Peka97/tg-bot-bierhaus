@@ -1,7 +1,7 @@
 import logging
 import json
 import re
-from asyncio import sleep
+from asyncio import sleep, create_task, get_event_loop
 from datetime import datetime
 from pytz import timezone
 from aiogram import Bot, Dispatcher, executor, types
@@ -615,35 +615,36 @@ async def send_cleaning(message: types.Message, state: FSMContext):
 
 
 async def on_start_up_tasks(dp: Dispatcher):
-	# await bot.send_message(SERVICE_CHAT_ID, text='🟡Запускаю бота.\nПроизвожу настройки...')
-	# message = await bot.send_message(SERVICE_CHAT_ID, text='Создаю таблицы...')
+	create_task(init_purchases())
+	await bot.send_message(SERVICE_CHAT_ID, text='🔵Запускаю бота.\nПроизвожу настройки...')
+	message = await bot.send_message(SERVICE_CHAT_ID, text='Создаю таблицы...')
 	response_main = create_main_list()
-	# await message.edit_text(f'🟡 Создаю таблицы...\n      📋 Главная: {response_main}')
+	await message.edit_text(f'🔵 Создаю таблицы...\n      📋 Главная: {response_main}')
 	response_meters = create_meters_list()
-	# await message.edit_text(f'🟡 Создаю таблицы...\n      📋 Главная: {response_main}\n      📋 Счётчики: {response_meters}')
+	await message.edit_text(
+		f'🔵 Создаю таблицы...\n      📋 Главная: {response_main}\n      📋 Счётчики: {response_meters}')
 	response_consumables = create_consumables_list()
-	# await message.edit_text(
-	# f'🟡 Создаю таблицы...\n      📋 Главная: {response_main}\n      📋 Счётчики: {response_meters}\n      📋 Закупки: {response_consumables}')
+	await message.edit_text(
+		f'🔵 Создаю таблицы...\n      📋 Главная: {response_main}\n      📋 Счётчики: {response_meters}\n      📋 Закупки: {response_consumables}')
 	response_finances_users = create_finance_user_list()
-	# await message.edit_text(
-	# 	f'🟡 Создаю таблицы...\n'
-	# 	f'      📋 Главная: {response_main}\n'
-	# 	f'      📋 Счётчики: {response_meters}\n'
-	# 	f'      📋 Закупки: {response_consumables}\n'
-	# 	f'      📋 Финансы продавцов: {response_finances_users}'
-	# )
+	await message.edit_text(
+		f'🔵 Создаю таблицы...\n'
+		f'      📋 Главная: {response_main}\n'
+		f'      📋 Счётчики: {response_meters}\n'
+		f'      📋 Закупки: {response_consumables}\n'
+		f'      📋 Финансы продавцов: {response_finances_users}'
+	)
 	response_finances_staff = create_finance_staff_list()
 
-	# await message.edit_text(
-	# 	f'🟡 Создаю таблицы...\n'
-	# 	f'      📋 Главная: {response_main}\n'
-	# 	f'      📋 Счётчики: {response_meters}\n'
-	# 	f'      📋 Закупки: {response_consumables}\n'
-	# 	f'      📋 Финансы продавцов: {response_finances_users}'
-	# 	f'      📋 Финансы супервайзера: {response_finances_staff}'
-	# )
+	await message.edit_text(
+		f'🔵 Создаю таблицы...\n'
+		f'      📋 Главная: {response_main}\n'
+		f'      📋 Счётчики: {response_meters}\n'
+		f'      📋 Закупки: {response_consumables}\n'
+		f'      📋 Финансы продавцов: {response_finances_users}\n'
+		f'      📋 Финансы супервайзера: {response_finances_staff}'
+	)
 	update_info_shops()
-	await init_purchases()
 	await bot.send_message(SERVICE_CHAT_ID, text='🟢 Бот активен')
 
 
@@ -652,19 +653,24 @@ async def on_shut_down_tasks(dp: Dispatcher):
 
 
 async def init_purchases():
-	time = time_now()
-	current_day = time.weekday()
-	current_hour = int(time.time().strftime('%H'))
-	if current_day == 0 and 9 < current_hour < 15:
-		for user_id in get_users_id():
-			await bot.send_message(
-				user_id,
-				'Пришло время закупок. Как будете готовы, нажмите кнопку ниже',
-				reply_markup=get_purchases_keyboard()
-			)
-			await sleep(86400)
-	else:
-		await sleep(3600)
+	while True:
+		time = time_now()
+		current_day = time.weekday()
+		current_hour = int(time.time().strftime('%H'))
+		if current_day == 0 and 9 < current_hour < 15:
+			for user_id in get_users_id():
+				await bot.send_message(
+					user_id,
+					'Пришло время закупок. Как будете готовы, нажмите кнопку ниже',
+					reply_markup=get_purchases_keyboard()
+				)
+				await bot.send_message(
+					SERVICE_CHAT_ID,
+					'📌 Разослал пользователям запросы на закупку.'
+				)
+				await sleep(55000)
+		else:
+			await sleep(3600)
 
 
 @dp.callback_query_handler(lambda c: 'purchases_start' in c.data)
@@ -804,5 +810,5 @@ if __name__ == '__main__':
 		dp,
 		skip_updates=True,
 		on_startup=on_start_up_tasks,
-		on_shutdown=on_shut_down_tasks
+		on_shutdown=on_shut_down_tasks,
 	)

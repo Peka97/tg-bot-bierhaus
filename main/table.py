@@ -247,7 +247,7 @@ def create_main_list():
 		column_idx = 0
 		sheet_id = get_sheet_id(title, SPREADSHEET_ID_MAIN)
 		if sheet_id is not None:
-			return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+			return 'Таблица уже создана.'
 
 		response = service.spreadsheets().batchUpdate(
 			spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -360,7 +360,7 @@ def create_main_list():
 		).execute()
 
 	except googleapiclient.errors.HttpError:
-		return 'Таблица уже создана.\nЕсли она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+		return 'Таблица уже создана.'
 
 	return 'Таблица успешно создана.'
 
@@ -374,7 +374,7 @@ def create_meters_list():
 
 		sheet_id = get_sheet_id(title, SPREADSHEET_ID_MAIN)
 		if sheet_id is not None:
-			return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+			return 'Таблица уже создана.'
 
 		response = service.spreadsheets().batchUpdate(
 			spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -437,7 +437,7 @@ def create_meters_list():
 		).execute()
 
 	except googleapiclient.errors.HttpError:
-		return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+		return 'Таблица уже создана.'
 
 	return 'Таблица успешно создана.'
 
@@ -451,7 +451,7 @@ def create_consumables_list():
 
 		sheet_id = get_sheet_id(title, SPREADSHEET_ID_MAIN)
 		if sheet_id is not None:
-			return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+			return 'Таблица уже создана.'
 
 		response = service.spreadsheets().batchUpdate(
 			spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -514,7 +514,7 @@ def create_consumables_list():
 		).execute()
 
 	except googleapiclient.errors.HttpError:
-		return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+		return 'Таблица уже создана.'
 
 	return 'Таблица успешно создана.'
 
@@ -565,8 +565,6 @@ def create_finance_user_list():
 			column_idx = 0
 
 			sheet_id = get_sheet_id(title, SPREADSHEET_ID_FINANCES)
-			if sheet_id is not None:
-				return 'Таблица уже создана. Добавлен новый день.'
 
 			response = service.spreadsheets().batchUpdate(
 				spreadsheetId=SPREADSHEET_ID_FINANCES,
@@ -629,7 +627,7 @@ def create_finance_user_list():
 			).execute()
 
 	except googleapiclient.errors.HttpError:
-		return 'Таблица уже создана. Если она выглядит не правильно, то удалите её и запустите алгоритм заново.'
+		return 'Таблица уже создана.'
 
 	return 'Таблица успешно создана.'
 
@@ -750,6 +748,8 @@ def create_finance_staff_list():
 			]
 		}
 	).execute()
+
+	return 'Таблица создана.'
 
 
 def update_finance_staff_list(comment: str, cash: dict = None):
