@@ -25,7 +25,7 @@ credentials = ServiceAccountCredentials.from_json_keyfile_name(
 httpAuth = credentials.authorize(httplib2.Http())
 service = discovery.build('sheets', 'v4', http=httpAuth)
 
-locale.setlocale(locale.LC_ALL, "ru")
+locale.setlocale(locale.LC_ALL, "ru_RU.UTF-8")
 
 main_columns = {
 	1: 'fullname',
