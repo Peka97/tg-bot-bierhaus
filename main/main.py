@@ -20,12 +20,9 @@ with open('config.json', 'r', encoding='utf-8') as config:
     API_TOKEN = data['TOKEN']
     SERVICE_CHAT_ID = data['SERVICE_CHAT_ID']
 
-formatter = logging.Formatter(
-    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-)
 logging.basicConfig(
     filename="bot_log.log",
-    # format=formatter,
+    format='%(asctime)s : [%(levelname)s] : %(message)s',
     filemode="a",
     level=logging.ERROR
 )
@@ -219,7 +216,7 @@ async def collection_get_shop(message: types.Message, state: FSMContext):
         data = await state.get_data()
         update_finance_user_list(message.from_user.id,
                                  '-', {'collection': data['collection_count']})
-        await message.answer('Принято!', reply_markup=get_user_keyboard())
+        await message.answer('Принято!')
         await state.finish()
 
 
@@ -368,8 +365,7 @@ async def send_fullname(callback_query: types.CallbackQuery, state: FSMContext):
                 "row": data['shop'][5:],
             }
         )
-        await callback_query.message.answer('Принято!')
-        await callback_query.message.answer('Напишите своё ФИО:')
+        await callback_query.message.answer('Принято!\nНапишите своё ФИО:')
         await UserState.fullname.set()
 
 
@@ -389,9 +385,8 @@ async def send_fullname(message: types.Message, state: FSMContext):
             change_user_info(message.from_user.id, data)
             update_main_table_fields(message.from_user.id)
             await state.finish()
-            await message.answer('Принято!')
             await message.answer(
-                f'Начинаем смену, {fullname}!\nОткрой смену в 1С и нажми на кнопку ниже',
+                f'Принято! Начинаем смену, {fullname}!\nОткрой смену в 1С и нажми на кнопку ниже',
                 reply_markup=get_work_start_keyboard()
             )
 
@@ -402,9 +397,8 @@ async def send_work_start(callback_query: types.CallbackQuery):
         data = {'work_start': f"{time_now().strftime('%H:%M')}"}
         change_user_info(callback_query.message.chat.id, data)
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            f'Визуально в магазине/на складе все целое и все в порядке?',
+            f'Принято!\nВизуально в магазине/на складе все целое и все в порядке?',
             reply_markup=get_shop_status_keyboard()
         )
 
@@ -415,9 +409,8 @@ async def send_cash_yes(callback_query: types.CallbackQuery):
         change_user_info(callback_query.message.chat.id, {
                          "shop_status": "Без особенностей"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            f'Прими денежные средства и нажми на кнопку "Средства получены".',
+            f'Принято!\nПрими денежные средства и нажми на кнопку "Средства получены".',
             reply_markup=get_send_cash_keyboard()
         )
 
@@ -439,9 +432,8 @@ async def send_cash_no(message: types.Message, state: FSMContext):
         await state.finish()
         change_user_info(message.chat.id, {"shop_status": shop_status})
         update_main_table_fields(message.chat.id)
-        await message.answer('Принято!', reply_markup=get_user_keyboard())
         await message.answer(
-            f'Прими денежные средства и нажми на кнопку "Средства получены".',
+            f'Принято!\nПрими денежные средства и нажми на кнопку "Средства получены".',
             reply_markup=get_send_cash_keyboard()
         )
 
@@ -451,9 +443,8 @@ async def send_layout(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
         change_user_info(callback_query.message.chat.id, {'cash': "'+"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer(f'Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'Разложи товар, по окончанию нажми на кнопку "Товар разложен"',
+            'Принято!\nРазложи товар, по окончанию нажми на кнопку "Товар разложен"',
             reply_markup=get_layout_keyboard()
         )
 
@@ -463,9 +454,8 @@ async def send_cleaning(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
         change_user_info(callback_query.message.chat.id, {"layout": "'+"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'Уберись в помещении (протирка кранов, протирка всех поверхностей, проверить чистоту окон и стёкол витрин)'
+            'Принято!\nУберись в помещении (протирка кранов, протирка всех поверхностей, проверить чистоту окон и стёкол витрин)'
             'и нажми на кнопку "Все чисто"',
             reply_markup=get_cleaning_keyboard(),
         )
@@ -476,9 +466,8 @@ async def send_photo(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
         change_user_info(callback_query.message.chat.id, {"cleaning": "'+"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'Отправь Фото отчет в группу с Админом до 11.00 (Электроэнергия, Раскладка, Фасад магазина, лист смены кег)'
+            'Принято!\nОтправь Фото отчет в группу с Админом до 11.00 (Электроэнергия, Раскладка, Фасад магазина, лист смены кег)'
             'и нажми кнопку отправила,',
             reply_markup=get_send_photo_keyboard(),
         )
@@ -489,9 +478,8 @@ async def send_continue(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
         change_user_info(callback_query.message.chat.id, {"send_photo": "'+"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'После проверки ты получишь до 10 баллов, Продолжай! (нажать на кнопку "Продолжить")',
+            'Принято!\nПосле проверки ты получишь до 10 баллов, Продолжай! (нажать на кнопку "Продолжить")',
             reply_markup=get_continue_keyboard(),
         )
 
@@ -499,9 +487,8 @@ async def send_continue(callback_query: types.CallbackQuery):
 @dp.callback_query_handler(lambda c: c.data.startswith('continue'))
 async def send_expiration_date(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'Проверь сроки годности товаров и нажать на кнопку "Срок годности проверен"',
+            'Принято!\nПроверь сроки годности товаров и нажать на кнопку "Срок годности проверен"',
             reply_markup=get_expiration_date_keyboard(),
         )
 
@@ -512,9 +499,8 @@ async def send_work_done(callback_query: types.CallbackQuery):
         change_user_info(callback_query.message.chat.id,
                          {"expiration_date": "'+"})
         update_main_table_fields(callback_query.message.chat.id)
-        await callback_query.message.answer('Принято!', reply_markup=get_user_keyboard())
         await callback_query.message.answer(
-            'Закрой смену в 1С и нажми на кнопку "Закрыла смену 1С"',
+            'Принято!\nЗакрой смену в 1С и нажми на кнопку "Закрыла смену 1С"',
             reply_markup=get_work_done_keyboard(),
         )
 
@@ -622,9 +608,8 @@ async def send_cleaning(message: types.Message, state: FSMContext):
                          'full_kegs': only_digits(data['full_kegs'])})
         update_main_table_fields(message.chat.id)
         set_user_temple(message.from_user.id)
-        await message.answer('Принято!', reply_markup=get_user_keyboard())
         await message.answer(
-            'На этом всё. Хорошего отдыха!\nКак выйдешь на смену - просто нажми "Начать смену"',
+            'Принято!\nНа этом всё. Хорошего отдыха!\nКак выйдешь на смену - просто нажми "Начать смену"',
             reply_markup=get_start_keyboard(),
         )
 
@@ -826,10 +811,10 @@ async def clear(message: types.Message):
         await message.answer('Данные очищены.')
 
 
-@dp.message_handler(commands='test')
-async def test(message: types.Message):
-    tz = timezone('Europe/Saratov')
-    await message.answer(datetime.now().astimezone(tz).time().strftime('%H:%M'))
+# @dp.message_handler(commands='test')
+# async def test(message: types.Message):
+#     tz = timezone('Europe/Saratov')
+#     await message.answer(datetime.now().astimezone(tz).time().strftime('%H:%M'))
     # await message.answer([z for z in pytz.all_timezones if 'Europe' in z])
 
 

@@ -49,13 +49,13 @@ main_columns = {
 def get_count_days():
     """Считает количество дней в текущем месяце текущего года"""
 
-    current_year = datetime.now().astimezone(timezone('Europe/Saratov')).year()
-    month = datetime.now().astimezone(timezone('Europe/Saratov')).month()
+    current_year = datetime.now().astimezone(timezone('Europe/Saratov')).year
+    month = datetime.now().astimezone(timezone('Europe/Saratov')).month
     return monthrange(current_year, month)[1]
 
 
 def get_full_date():
-    return datetime.now().astimezone(timezone('Europe/Saratov')).date().strftime("%d.%m.%Y")
+    return datetime.now().astimezone(timezone('Europe/Saratov')).strftime("%d.%m.%Y")
 
 
 def get_shop_name(shop_id: str, time: str):
@@ -76,7 +76,7 @@ def list_exist():
     """Проверяет наличие листа с текущей датой"""
 
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     title = f'{current_month} Главная'
     sheets = service.spreadsheets().get(
         spreadsheetId=SPREADSHEET_ID_MAIN).execute().get('sheets')
@@ -128,7 +128,7 @@ def get_shop_row(shop_name: str, time: str):
 
 def update_main_table_fields(user_id: int):
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     title = f'{current_month} Главная'
     user_row = int(get_user_info(user_id)['row'])
     today = int(datetime.now().astimezone(
@@ -168,7 +168,7 @@ def update_meters_table_fields(user_id: int):
         user_data = get_user_info(user_id)
         shop_name = get_shop_name(user_data['shop'], user_data['time'])
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         title = f'{current_month} Счётчики'
         rows = service.spreadsheets().values().get(
             spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -211,7 +211,7 @@ def update_meters_table_fields(user_id: int):
 def check_fields(user_id):
     try:
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         title = f'{current_month} Главная'
         user_row = int(get_user_info(user_id)['row'])
         today = int(datetime.now().astimezone(
@@ -248,14 +248,14 @@ def get_sheet_id(name, spreadsheet_id: str):
 
 def get_pattern_date(day):
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     return f'{day:02}.{current_month}'
 
 
 def create_main_list():
     try:
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         title = f'{current_month} Главная'
         row_idx = 0
         column_idx = 0
@@ -383,9 +383,9 @@ def create_meters_list():
     try:
         pattern_sheet_id = get_sheet_id('Meters Pattern', SPREADSHEET_ID_MAIN)
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         date = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%B %Y")
+            timezone('Europe/Saratov')).strftime("%B %Y")
         title = f'{current_month} Счётчики'
 
         sheet_id = get_sheet_id(title, SPREADSHEET_ID_MAIN)
@@ -463,9 +463,9 @@ def create_consumables_list():
         pattern_sheet_id = get_sheet_id(
             'Consumables Pattern', SPREADSHEET_ID_MAIN)
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         date = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%d.%m.%Y")
+            timezone('Europe/Saratov')).strftime("%d.%m.%Y")
         title = f'{current_month} Закупки'
 
         sheet_id = get_sheet_id(title, SPREADSHEET_ID_MAIN)
@@ -540,7 +540,7 @@ def create_consumables_list():
 
 def update_consumables_list(user_id: int):
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     column_idx = 0
     title = f'{current_month} Закупки'
     user_info = get_user_info(user_id)
@@ -579,7 +579,7 @@ def create_finance_user_list():
             'Finance User Pattern', SPREADSHEET_ID_FINANCES)
         addresses = get_shop_adresses()
         current_month = datetime.now().astimezone(
-            timezone('Europe/Saratov')).date().strftime("%m.%Y")
+            timezone('Europe/Saratov')).strftime("%m.%Y")
         today = int(datetime.now().astimezone(
             timezone('Europe/Saratov')).strftime('%d'))
         for address in addresses:
@@ -661,7 +661,7 @@ def update_finance_user_list(user_id: int, comment: str, cash: dict):
     time = user_data['time']
     shop_address = get_shop_name(shop_id, time)
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     current_time = datetime.now().astimezone(
         timezone('Europe/Saratov')).strftime("%d.%m.%y %H:%M")
     title = f'{current_month} {shop_address}'
@@ -708,7 +708,7 @@ def create_finance_staff_list():
     pattern_sheet_id = get_sheet_id(
         'Finance Staff Pattern', SPREADSHEET_ID_FINANCES)
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     title = f'{current_month} Финансы Супервайзер'
 
     sheet_id = get_sheet_id(title, SPREADSHEET_ID_FINANCES)
@@ -782,7 +782,7 @@ def create_finance_staff_list():
 
 def update_finance_staff_list(comment: str, cash: dict = None):
     current_month = datetime.now().astimezone(
-        timezone('Europe/Saratov')).date().strftime("%m.%Y")
+        timezone('Europe/Saratov')).strftime("%m.%Y")
     current_time = datetime.now().astimezone(
         timezone('Europe/Saratov')).strftime("%d.%m.%y %H:%M")
     title = f'{current_month} Финансы Супервайзер'
