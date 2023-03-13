@@ -20,14 +20,22 @@ with open('config.json', 'r', encoding='utf-8') as config:
     API_TOKEN = data['TOKEN']
     SERVICE_CHAT_ID = data['SERVICE_CHAT_ID']
 
-logging.basicConfig(filename="bot_log.log", filemode="a", level=logging.ERROR)
+formatter = logging.Formatter(
+    '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+)
+logging.basicConfig(
+    filename="bot_log.log",
+    # format=formatter,
+    filemode="a",
+    level=logging.ERROR
+)
 
 bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
 def time_now():
-    return timezone('Europe/Saratov').localize(datetime.now())
+    return datetime.now().astimezone(timezone('Europe/Saratov'))
 
 
 class UserState(StatesGroup):
@@ -41,6 +49,7 @@ class UserState(StatesGroup):
     revenue = State()
     terminal = State()
     collection = State()
+    collection_end_day = State()
     water_counter = State()
     light_counter = State()
     connected_kegs = State()
@@ -542,17 +551,17 @@ async def send_collection_or_exit(message: types.Message, state: FSMContext):
         change_user_info(message.chat.id, {
                          'terminal': only_digits(data['terminal'])})
         update_main_table_fields(message.chat.id)
-        if get_user_info(message.chat.id)['time'] == 'day_only':
+        if get_user_info(message.chat.id)['time'] == 'day':
             await message.answer(
                 'На этом всё. Хорошего отдыха!\nКак выйдешь на смену - просто нажми "Начать смену"',
                 reply_markup=get_start_keyboard(),
             )
         else:
             await message.answer('Принято! Введите сумму для инкассации цифрами в следующем сообщении')
-            await UserState.collection.set()
+            await UserState.collection_end_day.set()
 
 
-@dp.message_handler(state=UserState.collection)
+@dp.message_handler(state=UserState.collection_end_day)
 async def send_water_counter(message: types.Message, state: FSMContext):
     if is_user(message.chat.id):
         await state.update_data(collection=message.text)
@@ -815,6 +824,13 @@ async def clear(message: types.Message):
     if is_admin(message.from_user.id):
         set_staff_temple()
         await message.answer('Данные очищены.')
+
+
+@dp.message_handler(commands='test')
+async def test(message: types.Message):
+    tz = timezone('Europe/Saratov')
+    await message.answer(datetime.now().astimezone(tz).time().strftime('%H:%M'))
+    # await message.answer([z for z in pytz.all_timezones if 'Europe' in z])
 
 
 if __name__ == '__main__':
