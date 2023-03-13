@@ -204,7 +204,7 @@ def update_meters_table_fields(user_id: int):
         ).execute()
     except TypeError:
         user_data = get_user_info(user_id)
-        print(
+        return (
             f"Не удалось найти магазин {get_shop_name(user_data['shop'], user_data['time'])}")
 
 

@@ -13,13 +13,6 @@ def get_start_keyboard():
     return keyboard
 
 
-def get_user_keyboard():
-    btn = KeyboardButton('Расход')
-    keyboard = ReplyKeyboardMarkup(resize_keyboard=True)
-    keyboard.add(btn)
-    return keyboard
-
-
 def get_cancel_keyboard():
     btn = InlineKeyboardButton('Отменить', callback_data='cancel')
     keyboard = InlineKeyboardMarkup()
@@ -30,10 +23,10 @@ def get_cancel_keyboard():
 def get_admin_keyboard():
     btn_1 = InlineKeyboardButton(
         'Добавить супервайзера', callback_data='add_staff')
-    btn_2 = InlineKeyboardButton(
-        'Проверить алгоритм пользователя', callback_data='check_user')
-    btn_3 = InlineKeyboardButton(
-        'Проверить алгоритм супервайзера', callback_data='check_staff')
+    # btn_2 = InlineKeyboardButton(
+    #     'Проверить алгоритм пользователя', callback_data='check_user')
+    # btn_3 = InlineKeyboardButton(
+    #     'Проверить алгоритм супервайзера', callback_data='check_staff')
     keyboard = InlineKeyboardMarkup(row_width=1).add(btn_1, btn_2, btn_3)
     return keyboard
 

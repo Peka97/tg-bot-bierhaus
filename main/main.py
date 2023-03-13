@@ -580,8 +580,12 @@ async def send_connected_kegs(message: types.Message, state: FSMContext):
         await state.finish()
         change_user_info(message.chat.id, {
                          'light_counter': only_digits(data['light_counter'])})
-        update_meters_table_fields(message.chat.id)
-        await message.answer('Принято! Введите количество подключенных кег')
+        responce = update_meters_table_fields(message.chat.id)
+        if responce:
+            await message.answer('Произошла непредвиденная ошибка. Обратитесь к руководству')
+            await bot.send_message(SERVICE_CHAT_ID, responce)
+        else:
+            await message.answer('Принято! Введите количество подключенных кег')
         await UserState.connected_kegs.set()
 
 
