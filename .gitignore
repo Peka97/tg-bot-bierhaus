@@ -1,4 +1,6 @@
+.venv
 venv
 */*.json
 */*.log
 requirements.txt
+main/__pycache__
