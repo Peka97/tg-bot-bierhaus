@@ -6,6 +6,7 @@ def set_user_temple(user_id):
         data = json.load(users)
 
     data[f'{user_id}'] = {
+        'time_now': 'Н/Д',
         'row': '0',
         'time': "Н/Д",
         'shop': "Н/Д",
@@ -53,7 +54,22 @@ def set_users_temple():
             json.dump(data, users)
     except json.JSONDecodeError:
         with open('users.json', 'w', encoding='utf-8') as users:
-            json.dump({'5503842748': {}}, users)
+            json.dump(
+                {
+                    "5503842748": {},
+                    "6255675143": {},
+                    "6085296705": {},
+                    "5611776319": {},
+                    "5996352296": {},
+                    "6094310291": {},
+                    "6144422082": {},
+                    "6085888939": {},
+                    "6120787451": {},
+                    "5994833950": {},
+                    "6124982783": {}
+                },
+                users
+            )
 
 
 def set_staff_temple():

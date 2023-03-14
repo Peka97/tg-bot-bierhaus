@@ -27,7 +27,7 @@ def get_admin_keyboard():
     #     'Проверить алгоритм пользователя', callback_data='check_user')
     # btn_3 = InlineKeyboardButton(
     #     'Проверить алгоритм супервайзера', callback_data='check_staff')
-    keyboard = InlineKeyboardMarkup(row_width=1).add(btn_1, btn_2, btn_3)
+    keyboard = InlineKeyboardMarkup(row_width=1).add(btn_1)
     return keyboard
 
 

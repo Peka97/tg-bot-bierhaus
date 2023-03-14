@@ -123,16 +123,13 @@ def get_shop_row(shop_name: str, time: str):
                      for address in values if ' (Дневная)' in address]
 
 
-# return values.index(shop_name)
-
-
 def update_main_table_fields(user_id: int):
     current_month = datetime.now().astimezone(
         timezone('Europe/Saratov')).strftime("%m.%Y")
     title = f'{current_month} Главная'
     user_row = int(get_user_info(user_id)['row'])
-    today = int(datetime.now().astimezone(
-        timezone('Europe/Saratov')).strftime('%d'))
+    today = int(datetime.strptime(get_user_info(
+        user_id)['time_now'], '%Y-%m-%d %H:%M:%S.%f%z').strftime('%d'))
     cursor = 2 + 25 * (today - 1) + user_row
     column = service.spreadsheets().values().get(
         spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -186,8 +183,9 @@ def update_meters_table_fields(user_id: int):
             range=f'{title}!I2:AM26',
             majorDimension="ROWS",
         ).execute()['values']
-        meters[row_idx][today - 1] = water
-        meters[row_idx + 1][today - 1] = light
+
+        meters[row_idx][today - 1] = int(water)
+        meters[row_idx + 1][today - 1] = int(light)
 
         service.spreadsheets().values().batchUpdate(
             spreadsheetId=SPREADSHEET_ID_MAIN,
@@ -202,7 +200,8 @@ def update_meters_table_fields(user_id: int):
                 ]
             }
         ).execute()
-    except TypeError:
+    except TypeError as error:
+        print(error)
         user_data = get_user_info(user_id)
         return (
             f"Не удалось найти магазин {get_shop_name(user_data['shop'], user_data['time'])}")

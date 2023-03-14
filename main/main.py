@@ -31,7 +31,7 @@ bot = Bot(token=API_TOKEN)
 dp = Dispatcher(bot, storage=MemoryStorage())
 
 
-def time_now():
+def time_now() -> datetime:
     return datetime.now().astimezone(timezone('Europe/Saratov'))
 
 
@@ -363,6 +363,7 @@ async def send_fullname(callback_query: types.CallbackQuery, state: FSMContext):
             {
                 "shop": data['shop'],
                 "row": data['shop'][5:],
+                "time_now": f'{time_now()}',
             }
         )
         await callback_query.message.answer('Принято!\nНапишите своё ФИО:')
@@ -394,7 +395,7 @@ async def send_fullname(message: types.Message, state: FSMContext):
 @dp.callback_query_handler(lambda c: c.data.startswith('work_start'))
 async def send_work_start(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
-        data = {'work_start': f"{time_now().strftime('%H:%M')}"}
+        data = {'work_start': time_now().strftime('%H:%M')}
         change_user_info(callback_query.message.chat.id, data)
         update_main_table_fields(callback_query.message.chat.id)
         await callback_query.message.answer(
@@ -509,7 +510,7 @@ async def send_work_done(callback_query: types.CallbackQuery):
 async def send_revenue_or_exit(callback_query: types.CallbackQuery):
     if is_user(callback_query.message.chat.id):
         change_user_info(callback_query.message.chat.id, {
-                         "work_done": f"{time_now().strftime('%H:%M')}"})
+                         "work_done": time_now().strftime('%H:%M')})
         update_main_table_fields(callback_query.message.chat.id)
         await callback_query.message.answer('Напиши полученную выручку из кассы цифрами в следующем сообщении')
         await UserState.revenue.set()
@@ -582,7 +583,7 @@ async def send_connected_kegs(message: types.Message, state: FSMContext):
                          'light_counter': only_digits(data['light_counter'])})
         responce = update_meters_table_fields(message.chat.id)
         if responce:
-            await message.answer('Произошла непредвиденная ошибка. Обратитесь к руководству')
+            await message.answer('Принято! Введите количество подключенных кег')
             await bot.send_message(SERVICE_CHAT_ID, responce)
         else:
             await message.answer('Принято! Введите количество подключенных кег')
